@@ -1,4 +1,4 @@
-import { put, takeLatest, all } from 'redux-saga/effects';
+import { put, takeLatest, all, fork } from 'redux-saga/effects';
 
 function* fetchNews() {
 
@@ -8,13 +8,21 @@ function* fetchNews() {
   yield put({ type: "NEWS_RECEIVED", json: json.articles || [{ error: json.message }] });
 }
 
+function* setDummy() {
+  yield put({ type: "DUMMY_SET"});
+}
+
 function* actionWatcher() {
   yield takeLatest('GET_NEWS', fetchNews)
 }
 
+function* dummyWatcher() {
+  yield takeLatest('SET_DUMMY', setDummy)
+}
 
 export default function* rootSaga() {
-  yield all([
+  yield [
     actionWatcher(),
-  ]);
+    dummyWatcher()
+  ];
 }
